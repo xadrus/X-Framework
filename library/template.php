@@ -1,39 +1,39 @@
 <?php
 class Template {
 	 
-	protected $variables = array();
-	protected $_controller;
-	protected $_action;
-	 
-	function __construct($controller,$action) {
-		$this->_controller = $controller;
-		$this->_action = $action;
+	
+	public $templateDir = PUBLIC_VIEW_PATH;
+	
+	public $viewData = array();
+	
+	public $currentViewFile = NULL;
+	
+	public function __construct(){
+		
 	}
-
-	/** Set Variables **/
-
-	function set($name,$value) {
-		$this->variables[$name] = $value;
-	}
-
-	/** Display Template **/
-	 
-	function render() {
-		extract($this->variables);
-		 
-		if (file_exists(ROOT . DS . 'application' . DS . 'views' . DS . $this->_controller . DS . 'header.php')) {
-			include (ROOT . DS . 'application' . DS . 'views' . DS . $this->_controller . DS . 'header.php');
+	
+	
+	public function setView($viewFile){
+		if(!file_exists($this->templateDir.$viewFile.'.php')){
+			echo "view nicht gefunden";
 		} else {
-			include (ROOT . DS . 'application' . DS . 'views' . DS . 'header.php');
-		}
-
-		include (ROOT . DS . 'application' . DS . 'views' . DS . $this->_controller . DS . $this->_action . '.php');
-		 
-		if (file_exists(ROOT . DS . 'application' . DS . 'views' . DS . $this->_controller . DS . 'footer.php')) {
-			include (ROOT . DS . 'application' . DS . 'views' . DS . $this->_controller . DS . 'footer.php');
-		} else {
-			include (ROOT . DS . 'application' . DS . 'views' . DS . 'footer.php');
+			$this->currentViewFile = $viewFile;
 		}
 	}
-
+	
+	
+	public function addViewData($data){
+		$this->$viewData = $data;
+	}
+	
+	public function loadView(){
+		//echo $this->currentViewFile;exit;
+		//echo $this->templateDir.$this->currentViewFile.'.php';
+		if(!file_exists($this->templateDir.$this->currentViewFile.'.php')){
+			echo "view file existiert nicht";
+		} else {
+			include($this->templateDir.$this->currentViewFile.'.php');
+		}
+	}
+	
 }

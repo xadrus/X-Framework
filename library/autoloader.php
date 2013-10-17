@@ -1,9 +1,6 @@
 <?php 
 class AutoLoader{
 	
-	public $db;
-	
-	
 	public function __construct(){
 		$this->setReporting();
 		$this->uriMVC();
@@ -24,14 +21,51 @@ class AutoLoader{
 	}
 	
 	public function uriMVC(){
-		global $url;
+	global $url;
+
+	$urlArray = array();
+	$urlArray = explode("/",$url);
+
+  
+  if(count($urlArray) > 1){
+	  $controller = $urlArray[0];
+	  array_shift($urlArray);
+	  $action = $urlArray[0];
+	  array_shift($urlArray);
+	  $queryString = $urlArray;
+  } else {
+    $controllerName = 'indexcontroller';
+		$controller = 'indexcontroller';
+		$defaultController = new $controller();
+		$action = "index";
+	  $queryString = array();
+  }
+  
+	$controllerName = $controller;
+	$controller = ucwords($controller);
+	$model = rtrim($controller, 's');
+	
+	if(empty($controller) || empty($action)){
+	if(!file_exists(APPLICATION_CONTROLLER_PATH.$controller.'.php')){
 		
-		$urlTmpArray = array();
-		$urlTmpArray = explode("/",$url);
-		
-		$controller = $urlTmpArray[0];
-		$action = $urlTmpArray[1];
-		$values = $urlTmpArray[2];
+		if(file_exists(APPLICATION_CONTROLLER_PATH.'indexcontroller.php')){
+			
+			
+		}
+	}
+	}
+	$dispatch = new $controller($model,$controllerName,$action);
+
+	if ((int)method_exists($controller, $action)) {
+		call_user_func_array(array($dispatch,$action),$queryString);
+	} else {
+		//Default auf Index Controller TODO
+		$controllerName = 'indexcontroller';
+	  $controller = ucwords('indexcontroller');
+	  $model = rtrim($controller, 's');
+	  $action = 'index';
+		call_user_func_array(array($dispatch,$action),$queryString);
+	}
 		
 		
 	}
